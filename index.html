@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>VideoJS - Kiều Gia Đại Viện</title>
+  <title>Kiều Gia Đại Viện - Tập 1</title>
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
   <script src="https://unpkg.com/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
@@ -13,12 +13,9 @@
       padding: 30px;
       text-align: center;
     }
-    #my-video {
-      width: 960px !important;
-      height: 540px !important;
-    }
-    .video-js .vjs-tech,
-    .video-js iframe {
+
+    /* Đảm bảo đúng 960x540 (16:9) */
+    #my-video, .video-js .vjs-tech, .video-js iframe {
       width: 960px !important;
       height: 540px !important;
     }
@@ -39,7 +36,7 @@
       }]
     }'>
     <track kind="subtitles"
-           src="kieu_gia_dai_vien_T01.vtt"
+           src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
            srclang="vi"
            label="Tiếng Việt"
            default>
