@@ -2,58 +2,48 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>VideoJS YouTube Full Size</title>
+  <title>VideoJS - Kiều Gia Đại Viện</title>
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
   <script src="https://unpkg.com/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
-
   <style>
     body {
-      background: #000;
+      background-color: #000;
       margin: 0;
+      padding: 30px;
+      text-align: center;
     }
-
-    .video-container {
-      position: relative;
-      width: 100%;
-      max-width: 960px;
-      margin: auto;
-      padding-top: 56.25%; /* 16:9 aspect ratio */
+    #my-video {
+      width: 960px !important;
+      height: 540px !important;
     }
-
-    .video-container .video-js,
-    .video-container .video-js .vjs-tech,
-    .video-container .video-js iframe {
-      position: absolute !important;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
+    .video-js .vjs-tech,
+    .video-js iframe {
+      width: 960px !important;
+      height: 540px !important;
     }
   </style>
 </head>
 <body>
 
-  <div class="video-container">
-    <video
-      id="my-video"
-      class="video-js"
-      controls
-      preload="auto"
-      data-setup='{
-        "techOrder": ["youtube"],
-        "sources": [{
-          "type": "video/youtube",
-          "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
-        }]
-      }'>
-      <track kind="subtitles"
-             src="kieu_gia_dai_vien_T01.vtt"
-             srclang="vi"
-             label="Tiếng Việt"
-             default>
-    </video>
-  </div>
+  <video
+    id="my-video"
+    class="video-js"
+    controls
+    preload="auto"
+    data-setup='{
+      "techOrder": ["youtube"],
+      "sources": [{
+        "type": "video/youtube",
+        "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
+      }]
+    }'>
+    <track kind="subtitles"
+           src="kieu_gia_dai_vien_T01.vtt"
+           srclang="vi"
+           label="Tiếng Việt"
+           default>
+  </video>
 
 </body>
 </html>
