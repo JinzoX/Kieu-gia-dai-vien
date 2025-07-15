@@ -1,34 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Kiều Gia Đại Viện - Tập 1</title>
+  <title>Kiều Gia Đại Viện</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
   <script src="https://unpkg.com/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
   <style>
-    html, body {
-      height: 100%;
+    body {
+      background: #000;
       margin: 0;
-      background-color: #000;
-    }
-
-    .center-wrapper {
+      padding: 20px;
+      color: #fff;
+      font-family: sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
     }
 
-    #my-video, .video-js .vjs-tech, .video-js iframe {
-      width: 960px !important;
-      height: 540px !important;
+    .video-container {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 16/9;
+    }
+
+    .video-js,
+    .video-js .vjs-tech,
+    .video-js iframe {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pagination button {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pagination button.active {
+      background: #ff5722;
+    }
+
+    @media (max-width: 600px) {
+      .pagination button {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="center-wrapper">
+  <div class="video-container">
     <video
       id="my-video"
       class="video-js"
@@ -42,6 +78,7 @@
         }]
       }'>
       <track kind="subtitles"
+             id="subtitle-track"
              src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
              srclang="vi"
              label="Tiếng Việt"
@@ -49,16 +86,54 @@
     </video>
   </div>
 
+  <div class="pagination">
+    <button class="page-btn active" data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
+    <!-- Bạn có thể thêm các tập 3, 4,... ở đây -->
+  </div>
+
   <script>
-    // Ép bật phụ đề khi player đã sẵn sàng
     const player = videojs('my-video');
-    player.ready(function () {
+
+    // Đảm bảo phụ đề bật sẵn
+    player.ready(() => {
       const tracks = player.textTracks();
       for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
-          tracks[i].mode = 'showing';
-        }
+        tracks[i].mode = 'showing';
       }
+    });
+
+    const buttons = document.querySelectorAll('.page-btn');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Xóa lớp active ở tất cả nút
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Đổi video và phụ đề
+        const videoUrl = btn.dataset.video;
+        const subUrl = btn.dataset.sub;
+
+        player.src({ type: 'video/youtube', src: videoUrl });
+
+        // Xóa và thêm lại phụ đề mới
+        const oldTrack = document.getElementById('subtitle-track');
+        if (oldTrack) oldTrack.remove();
+
+        const newTrack = document.createElement('track');
+        newTrack.setAttribute('kind', 'subtitles');
+        newTrack.setAttribute('id', 'subtitle-track');
+        newTrack.setAttribute('src', subUrl);
+        newTrack.setAttribute('srclang', 'vi');
+        newTrack.setAttribute('label', 'Tiếng Việt');
+        newTrack.setAttribute('default', '');
+
+        document.getElementById('my-video').appendChild(newTrack);
+
+        // Reload player để áp dụng phụ đề
+        player.load();
+      });
     });
   </script>
 
