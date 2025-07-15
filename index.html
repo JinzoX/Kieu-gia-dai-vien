@@ -11,7 +11,7 @@
     body {
       background: #000;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       color: #fff;
       font-family: sans-serif;
       display: flex;
@@ -19,18 +19,17 @@
       align-items: center;
     }
 
-    .video-wrapper {
+    .video-container {
       width: 100%;
       max-width: 960px;
-      padding: 20px;
+      aspect-ratio: 16/9;
     }
 
     .video-js,
     .video-js .vjs-tech,
     .video-js iframe {
       width: 100% !important;
-      height: auto !important;
-      aspect-ratio: 16/9;
+      height: 100% !important;
     }
 
     .pagination {
@@ -65,7 +64,7 @@
 </head>
 <body>
 
-  <div class="video-wrapper">
+  <div class="video-container">
     <video
       id="my-video"
       class="video-js"
@@ -79,71 +78,71 @@
         }]
       }'>
       <track kind="subtitles"
-             id="subtitle-track"
              src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
              srclang="vi"
              label="Tiếng Việt"
              default>
     </video>
+  </div>
 
-    <div class="pagination">
-      <button class="page-btn active"
-              data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk"
-              data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
-
-      <button class="page-btn"
-              data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM"
-              data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
-    </div>
+  <div class="pagination">
+    <button class="page-btn active" data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
+    <!-- Bạn có thể thêm các tập 3, 4,... ở đây -->
   </div>
 
   <script>
     const player = videojs('my-video');
 
-    function enableSubtitles() {
-      const tracks = player.textTracks();
-      for (let i = 0; i < tracks.length; i++) {
-        if (tracks[i].kind === 'subtitles') {
-          tracks[i].mode = 'showing';
-        }
-      }
-    }
-
-    player.ready(() => {
-      enableSubtitles();
-    });
+    // Không cần hàm player.ready() ở đây nữa vì phụ đề ban đầu đã có 'default'
 
     const buttons = document.querySelectorAll('.page-btn');
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
+        // Nếu nút đã được chọn thì không làm gì cả
+        if (btn.classList.contains('active')) {
+          return;
+        }
+
+        // Xóa lớp active ở tất cả nút
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
+        // Lấy URL video và phụ đề từ data-attributes
         const videoUrl = btn.dataset.video;
         const subUrl = btn.dataset.sub;
 
-        // Xóa track cũ
-        const oldTrack = document.getElementById('subtitle-track');
-        if (oldTrack) oldTrack.remove();
+        // --- PHẦN SỬA LỖI QUAN TRỌNG ---
 
-        // Tạo track mới
-        const newTrack = document.createElement('track');
-        newTrack.setAttribute('kind', 'subtitles');
-        newTrack.setAttribute('id', 'subtitle-track');
-        newTrack.setAttribute('src', subUrl);
-        newTrack.setAttribute('srclang', 'vi');
-        newTrack.setAttribute('label', 'Tiếng Việt');
-        newTrack.setAttribute('default', '');
-        document.getElementById('my-video').appendChild(newTrack);
-
-        // Gán video mới rồi load lại
+        // 1. Thay đổi nguồn video
         player.src({ type: 'video/youtube', src: videoUrl });
-        player.load();
 
-        // Ép phụ đề bật lại sau khi video sẵn sàng
-        player.one('loadeddata', () => {
-          enableSubtitles();
+        // 2. Xóa tất cả các phụ đề cũ bằng API của Video.js
+        const existingTracks = player.remoteTextTracks();
+        let i = existingTracks.length;
+        while (i--) {
+          player.removeRemoteTextTrack(existingTracks[i]);
+        }
+
+        // 3. Thêm phụ đề mới bằng API của Video.js
+        const newTrack = {
+          kind: 'subtitles',
+          src: subUrl,
+          srclang: 'vi',
+          label: 'Tiếng Việt',
+          default: true // Đặt làm phụ đề mặc định
+        };
+        player.addRemoteTextTrack(newTrack, false);
+
+        // 4. Bật phụ đề mới lên (đảm bảo nó hiển thị)
+        player.ready(() => {
+            const tracks = player.textTracks();
+            for(let j = 0; j < tracks.length; j++) {
+                if(tracks[j].language === 'vi') {
+                    tracks[j].mode = 'showing';
+                }
+            }
         });
       });
     });
