@@ -11,12 +11,22 @@
     body {
       background: #000;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       color: #fff;
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+    }
+
+    .video-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+      flex-grow: 1;
     }
 
     .video-container {
@@ -64,63 +74,74 @@
 </head>
 <body>
 
-  <div class="video-container">
-    <video
-      id="my-video"
-      class="video-js"
-      controls
-      preload="auto"
-      data-setup='{
-        "techOrder": ["youtube"],
-        "sources": [{
-          "type": "video/youtube",
-          "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
-        }]
-      }'>
-      <track kind="subtitles"
-             id="subtitle-track"
-             src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
-             srclang="vi"
-             label="Tiếng Việt"
-             default>
-    </video>
-  </div>
+  <div class="video-wrapper">
+    <div class="video-container">
+      <video
+        id="my-video"
+        class="video-js"
+        controls
+        preload="auto"
+        data-setup='{
+          "techOrder": ["youtube"],
+          "sources": [{
+            "type": "video/youtube",
+            "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
+          }]
+        }'>
+        <track kind="subtitles"
+              id="subtitle-track"
+              src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
+              srclang="vi"
+              label="Tiếng Việt"
+              default>
+      </video>
+    </div>
 
-  <div class="pagination">
-    <button class="page-btn active" data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
-    <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
-    <!-- Bạn có thể thêm các tập 3, 4,... ở đây -->
+    <div class="pagination">
+      <button class="page-btn active"
+              data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk"
+              data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
+
+      <button class="page-btn"
+              data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM"
+              data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
+    </div>
   </div>
 
   <script>
     const player = videojs('my-video');
 
-    // Đảm bảo phụ đề bật sẵn
-    player.ready(() => {
+    function activateSubtitles() {
       const tracks = player.textTracks();
       for (let i = 0; i < tracks.length; i++) {
-        tracks[i].mode = 'showing';
+        if (tracks[i].kind === 'subtitles') {
+          tracks[i].mode = 'showing';
+        }
       }
-    });
+    }
+
+    player.ready(activateSubtitles);
+    player.on('loadedmetadata', activateSubtitles);
+    player.on('loadeddata', activateSubtitles);
 
     const buttons = document.querySelectorAll('.page-btn');
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Xóa lớp active ở tất cả nút
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Đổi video và phụ đề
         const videoUrl = btn.dataset.video;
         const subUrl = btn.dataset.sub;
 
+        // Load video mới
         player.src({ type: 'video/youtube', src: videoUrl });
 
-        // Xóa và thêm lại phụ đề mới
+        // Xóa track cũ
         const oldTrack = document.getElementById('subtitle-track');
         if (oldTrack) oldTrack.remove();
 
+        // Tạo track mới
         const newTrack = document.createElement('track');
         newTrack.setAttribute('kind', 'subtitles');
         newTrack.setAttribute('id', 'subtitle-track');
@@ -131,8 +152,11 @@
 
         document.getElementById('my-video').appendChild(newTrack);
 
-        // Reload player để áp dụng phụ đề
-        player.load();
+        // Reload lại phụ đề
+        player.ready(() => {
+          player.load();
+          activateSubtitles();
+        });
       });
     });
   </script>
