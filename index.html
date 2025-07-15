@@ -17,29 +17,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
     }
 
     .video-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 20px;
-      flex-grow: 1;
-    }
-
-    .video-container {
       width: 100%;
       max-width: 960px;
-      aspect-ratio: 16/9;
+      padding: 20px;
     }
 
     .video-js,
     .video-js .vjs-tech,
     .video-js iframe {
       width: 100% !important;
-      height: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16/9;
     }
 
     .pagination {
@@ -75,27 +66,25 @@
 <body>
 
   <div class="video-wrapper">
-    <div class="video-container">
-      <video
-        id="my-video"
-        class="video-js"
-        controls
-        preload="auto"
-        data-setup='{
-          "techOrder": ["youtube"],
-          "sources": [{
-            "type": "video/youtube",
-            "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
-          }]
-        }'>
-        <track kind="subtitles"
-              id="subtitle-track"
-              src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
-              srclang="vi"
-              label="Tiếng Việt"
-              default>
-      </video>
-    </div>
+    <video
+      id="my-video"
+      class="video-js"
+      controls
+      preload="auto"
+      data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [{
+          "type": "video/youtube",
+          "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
+        }]
+      }'>
+      <track kind="subtitles"
+             id="subtitle-track"
+             src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
+             srclang="vi"
+             label="Tiếng Việt"
+             default>
+    </video>
 
     <div class="pagination">
       <button class="page-btn active"
@@ -111,7 +100,7 @@
   <script>
     const player = videojs('my-video');
 
-    function activateSubtitles() {
+    function enableSubtitles() {
       const tracks = player.textTracks();
       for (let i = 0; i < tracks.length; i++) {
         if (tracks[i].kind === 'subtitles') {
@@ -120,9 +109,9 @@
       }
     }
 
-    player.ready(activateSubtitles);
-    player.on('loadedmetadata', activateSubtitles);
-    player.on('loadeddata', activateSubtitles);
+    player.ready(() => {
+      enableSubtitles();
+    });
 
     const buttons = document.querySelectorAll('.page-btn');
 
@@ -133,9 +122,6 @@
 
         const videoUrl = btn.dataset.video;
         const subUrl = btn.dataset.sub;
-
-        // Load video mới
-        player.src({ type: 'video/youtube', src: videoUrl });
 
         // Xóa track cũ
         const oldTrack = document.getElementById('subtitle-track');
@@ -149,13 +135,15 @@
         newTrack.setAttribute('srclang', 'vi');
         newTrack.setAttribute('label', 'Tiếng Việt');
         newTrack.setAttribute('default', '');
-
         document.getElementById('my-video').appendChild(newTrack);
 
-        // Reload lại phụ đề
-        player.ready(() => {
-          player.load();
-          activateSubtitles();
+        // Gán video mới rồi load lại
+        player.src({ type: 'video/youtube', src: videoUrl });
+        player.load();
+
+        // Ép phụ đề bật lại sau khi video sẵn sàng
+        player.one('loadeddata', () => {
+          enableSubtitles();
         });
       });
     });
