@@ -8,15 +8,22 @@
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
   <script src="https://unpkg.com/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
   <style>
+    /* Thêm vào để đảm bảo body có chiều cao tối thiểu bằng màn hình */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
     body {
       background: #000;
-      margin: 0;
       padding: 20px;
       color: #fff;
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: center;    /* Căn giữa theo chiều ngang */
+      justify-content: center; /* THÊM: Căn giữa theo chiều dọc */
+      box-sizing: border-box; /* Giúp padding không làm tăng kích thước body */
     }
 
     .video-container {
@@ -87,55 +94,70 @@
 
   <div class="pagination">
     <button class="page-btn active" data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
-    <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
-    <!-- Bạn có thể thêm các tập 3, 4,... ở đây -->
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
+    <!-- CÁC TẬP MỚI ĐÃ ĐƯỢC THÊM VÀ SỬA LINK -->
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=RzM_2RmJmUk" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T03.srt">3</button>
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=bAyb2dbztNM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T04.srt">4</button>
+    <button class="page-btn" data-video="https://www.youtube.com/watch?v=aGiyLj8C1Xk" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T04.srt">5</button>
   </div>
 
   <script>
     const player = videojs('my-video');
-
-    // Không cần hàm player.ready() ở đây nữa vì phụ đề ban đầu đã có 'default'
-
     const buttons = document.querySelectorAll('.page-btn');
+
+    /**
+     * Hàm lấy ID video từ URL của YouTube
+     * @param {string} url - URL video YouTube
+     * @returns {string|null} - ID của video hoặc null
+     */
+    function getYoutubeId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Nếu nút đã được chọn thì không làm gì cả
         if (btn.classList.contains('active')) {
           return;
         }
 
-        // Xóa lớp active ở tất cả nút
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Lấy URL video và phụ đề từ data-attributes
         const videoUrl = btn.dataset.video;
         const subUrl = btn.dataset.sub;
 
-        // --- PHẦN SỬA LỖI QUAN TRỌNG ---
+        // --- PHẦN CẬP NHẬT QUAN TRỌNG ---
 
-        // 1. Thay đổi nguồn video
+        // 1. Cập nhật poster (hình đại diện) của video
+        const videoId = getYoutubeId(videoUrl);
+        if (videoId) {
+          // Dùng ảnh chất lượng cao (hqdefault), bạn có thể đổi thành maxresdefault
+          const posterUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          player.poster(posterUrl);
+        }
+
+        // 2. Thay đổi nguồn video
         player.src({ type: 'video/youtube', src: videoUrl });
 
-        // 2. Xóa tất cả các phụ đề cũ bằng API của Video.js
+        // 3. Xóa tất cả các phụ đề cũ
         const existingTracks = player.remoteTextTracks();
         let i = existingTracks.length;
         while (i--) {
           player.removeRemoteTextTrack(existingTracks[i]);
         }
 
-        // 3. Thêm phụ đề mới bằng API của Video.js
-        const newTrack = {
+        // 4. Thêm phụ đề mới
+        player.addRemoteTextTrack({
           kind: 'subtitles',
           src: subUrl,
           srclang: 'vi',
           label: 'Tiếng Việt',
-          default: true // Đặt làm phụ đề mặc định
-        };
-        player.addRemoteTextTrack(newTrack, false);
-
-        // 4. Bật phụ đề mới lên (đảm bảo nó hiển thị)
+          default: true
+        }, false);
+        
+        // 5. Đảm bảo phụ đề mới được hiển thị
         player.ready(() => {
             const tracks = player.textTracks();
             for(let j = 0; j < tracks.length; j++) {
