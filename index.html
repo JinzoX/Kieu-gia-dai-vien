@@ -7,13 +7,8 @@
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
   <script src="https://unpkg.com/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
-  
   <style>
-    /* 
-     * =======================================================================
-     * CSS CƠ BẢN CỦA TRANG
-     * =======================================================================
-     */
+    /* Thêm vào để đảm bảo body có chiều cao tối thiểu bằng màn hình */
     html, body {
       height: 100%;
       margin: 0;
@@ -26,9 +21,9 @@
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
+      align-items: center;    /* Căn giữa theo chiều ngang */
+      justify-content: center; /* THÊM: Căn giữa theo chiều dọc */
+      box-sizing: border-box; /* Giúp padding không làm tăng kích thước body */
     }
 
     .video-container {
@@ -36,8 +31,10 @@
       max-width: 960px;
       aspect-ratio: 16/9;
     }
-    
-    .video-js, .video-js .vjs-tech, .video-js iframe {
+
+    .video-js,
+    .video-js .vjs-tech,
+    .video-js iframe {
       width: 100% !important;
       height: 100% !important;
     }
@@ -63,187 +60,13 @@
     .pagination button.active {
       background: #ff5722;
     }
-  </style>
-  
-  <style>
-    /* 
-     * =======================================================================
-     * YOUTUBE-LIKE SKIN FOR VIDEO.JS (v8+)
-     * =======================================================================
-     */
 
-    /* -- BƯỚC 1: ĐỊNH NGHĨA BIẾN MÀU SẮC & KÍCH THƯỚC -- */
-    .vjs-youtube-skin {
-      --vjs-theme-color: #ff0000;
-      --vjs-icon-color: #ffffff;
-      --vjs-control-bar-bg: rgba(28, 28, 28, 0.8);
-      --vjs-progress-bg: rgba(255, 255, 255, 0.3);
-      --vjs-progress-load: rgba(255, 255, 255, 0.5);
-      --vjs-control-bar-height: 48px;
-      --vjs-progress-height: 3px;
-      --vjs-progress-hover-height: 5px;
-      --vjs-progress-scrubber-size: 13px;
+    @media (max-width: 600px) {
+      .pagination button {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
     }
-
-    /* -- BƯỚC 2: RESET VÀ THIẾT LẬP CƠ BẢN -- */
-    .vjs-youtube-skin {
-      font-family: "YouTube Noto", "Roboto", "Arial", sans-serif;
-      background-color: #000;
-    }
-    .vjs-youtube-skin .vjs-icon-placeholder {
-      color: var(--vjs-icon-color);
-    }
-    .vjs-youtube-skin.vjs-user-inactive .vjs-control-bar {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    /* -- BƯỚC 3: THANH ĐIỀU KHIỂN (CONTROL BAR) -- */
-    .vjs-youtube-skin .vjs-control-bar {
-      display: flex;
-      align-items: center;
-      height: var(--vjs-control-bar-height);
-      background: var(--vjs-control-bar-bg);
-      background-image: none; 
-      padding: 0 12px;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    /* Sắp xếp các thành phần bằng 'order' của Flexbox */
-    .vjs-youtube-skin .vjs-play-control       { order: 1; }
-    .vjs-youtube-skin .vjs-volume-panel      { order: 2; }
-    .vjs-youtube-skin .vjs-current-time      { order: 3; }
-    .vjs-youtube-skin .vjs-time-divider      { order: 4; }
-    .vjs-youtube-skin .vjs-duration          { order: 5; }
-    .vjs-youtube-skin .vjs-spacer            { order: 6; flex-grow: 1; }
-    .vjs-youtube-skin .vjs-captions-button   { order: 7; }
-    .vjs-youtube-skin .vjs-fullscreen-control{ order: 9; }
-
-    .vjs-youtube-skin .vjs-time-control {
-      font-size: 0.9em;
-      padding: 0 0.5em;
-      min-width: unset;
-      line-height: var(--vjs-control-bar-height);
-    }
-
-    /* -- BƯỚC 4: THANH TIẾN TRÌNH (PROGRESS CONTROL) -- */
-    .vjs-youtube-skin .vjs-progress-control {
-      position: absolute;
-      top: -12px;
-      left: 12px;
-      right: 12px;
-      width: auto;
-      height: 20px;
-      transition: top 0.2s ease;
-    }
-    .vjs-youtube-skin:hover .vjs-progress-control {
-        top: -20px;
-    }
-    .vjs-youtube-skin .vjs-progress-holder {
-      height: var(--vjs-progress-height);
-      background: var(--vjs-progress-bg);
-      transition: height 0.2s ease;
-      position: absolute;
-      width: 100%;
-    }
-    .vjs-youtube-skin .vjs-progress-control:hover .vjs-progress-holder {
-      height: var(--vjs-progress-hover-height);
-    }
-    .vjs-youtube-skin .vjs-load-progress,
-    .vjs-youtube-skin .vjs-load-progress div {
-      background: var(--vjs-progress-load);
-    }
-    .vjs-youtube-skin .vjs-play-progress {
-      background: var(--vjs-theme-color);
-    }
-    .vjs-youtube-skin .vjs-play-progress:before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translate(50%, -50%);
-      width: var(--vjs-progress-scrubber-size);
-      height: var(--vjs-progress-scrubber-size);
-      border-radius: 50%;
-      background-color: var(--vjs-theme-color);
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .vjs-youtube-skin .vjs-progress-control:hover .vjs-play-progress:before,
-    .vjs-youtube-skin .vjs-progress-control .vjs-slider-active .vjs-play-progress:before {
-      opacity: 1;
-    }
-    .vjs-youtube-skin .vjs-time-tooltip {
-        background-color: rgba(0, 0, 0, 0.7) !important;
-        border-radius: 3px;
-        padding: 5px 8px;
-        font-size: 0.8em;
-    }
-
-    /* -- BƯỚC 5: CÁC NÚT ĐIỀU KHIỂN CỤ THỂ -- */
-    .vjs-youtube-skin .vjs-big-play-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: rgba(28, 28, 28, 0.8);
-      width: 68px;
-      height: 48px;
-      border-radius: 50% / 10%;
-      border: none;
-      font-size: 2.5em;
-      transition: background-color 0.2s ease;
-      top: 50%;
-      left: 50%;
-      margin-top: -24px;
-      margin-left: -34px;
-    }
-    .vjs-youtube-skin:hover .vjs-big-play-button {
-        background-color: var(--vjs-theme-color);
-    }
-    .vjs-youtube-skin.vjs-has-started .vjs-big-play-button {
-        display: none;
-    }
-
-    /* Thanh Âm lượng (Volume Panel) */
-    .vjs-youtube-skin .vjs-volume-panel {
-      display: flex;
-      align-items: center;
-    }
-    .vjs-youtube-skin .vjs-volume-bar {
-      width: 0;
-      height: var(--vjs-progress-height);
-      margin: 0;
-      opacity: 0;
-      transition: width 0.2s ease, opacity 0.2s ease, margin 0.2s ease;
-    }
-    .vjs-youtube-skin .vjs-volume-panel:hover .vjs-volume-bar {
-      width: 5em;
-      opacity: 1;
-      margin: 0 0.5em;
-    }
-    .vjs-youtube-skin .vjs-volume-level {
-      background: var(--vjs-icon-color);
-    }
-    .vjs-youtube-skin .vjs-volume-bar.vjs-slider-horizontal {
-        background: var(--vjs-progress-bg);
-    }
-
-    /* Biểu tượng loading */
-    .vjs-youtube-skin .vjs-loading-spinner {
-      border-color: rgba(255, 255, 255, 0.2);
-      border-top-color: var(--vjs-icon-color);
-    }
-    /* Phụ đề (Subtitles) */
-    .vjs-youtube-skin .vjs-text-track-display {
-        bottom: calc(var(--vjs-control-bar-height) + 1em);
-    }
-    /* Tooltip cho các nút */
-    .vjs-youtube-skin .vjs-control .vjs-control-text {
-        background-color: rgba(0, 0, 0, 0.7) !important;
-        border-radius: 3px;
-    }
-
   </style>
 </head>
 <body>
@@ -251,10 +74,16 @@
   <div class="video-container">
     <video
       id="my-video"
-      class="video-js vjs-youtube-skin"
+      class="video-js"
       controls
       preload="auto"
-      > <!-- XÓA BỎ data-setup TẠI ĐÂY -->
+      data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [{
+          "type": "video/youtube",
+          "src": "https://www.youtube.com/watch?v=1qZKuHnHuVk"
+        }]
+      }'>
       <track kind="subtitles"
              src="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt"
              srclang="vi"
@@ -266,25 +95,21 @@
   <div class="pagination">
     <button class="page-btn active" data-video="https://www.youtube.com/watch?v=1qZKuHnHuVk" data-sub="https://raw.githubusercontent.com/vulong0308/test-phu-de/main/kieu%20gia%20dai%20vien_TV_T01.vtt">1</button>
     <button class="page-btn" data-video="https://www.youtube.com/watch?v=PTlUDHu-iVM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T02.vtt">2</button>
+    <!-- CÁC TẬP MỚI ĐÃ ĐƯỢC THÊM VÀ SỬA LINK -->
     <button class="page-btn" data-video="https://www.youtube.com/watch?v=RzM_2RmJmUk" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/refs/heads/main/kieu%20gia%20dai%20vien_TV_T03.vtt">3</button>
     <button class="page-btn" data-video="https://www.youtube.com/watch?v=bAyb2dbztNM" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T04.vtt">4</button>
     <button class="page-btn" data-video="https://www.youtube.com/watch?v=aGiyLj8C1Xk" data-sub="https://raw.githubusercontent.com/JinzoX/Kieu-gia-dai-vien/main/kieu%20gia%20dai%20vien_TV_T05.vtt">5</button>
   </div>
 
   <script>
-    // TẠO MỘT OBJECT CHỨA CÁC TÙY CHỌN KHỞI TẠO
-    const playerOptions = {
-        techOrder: ["youtube"],
-        sources: [{
-          type: "video/youtube",
-          src: "https://www.youtube.com/watch?v=1qZKuHnHuVk"
-        }]
-    };
-
-    // KHỞI TẠO PLAYER VÀ TRUYỀN CÁC TÙY CHỌN VÀO
-    const player = videojs('my-video', playerOptions);
+    const player = videojs('my-video');
     const buttons = document.querySelectorAll('.page-btn');
 
+    /**
+     * Hàm lấy ID video từ URL của YouTube
+     * @param {string} url - URL video YouTube
+     * @returns {string|null} - ID của video hoặc null
+     */
     function getYoutubeId(url) {
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
@@ -293,7 +118,9 @@
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        if (btn.classList.contains('active')) return;
+        if (btn.classList.contains('active')) {
+          return;
+        }
 
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -301,40 +128,44 @@
         const videoUrl = btn.dataset.video;
         const subUrl = btn.dataset.sub;
 
+        // --- PHẦN CẬP NHẬT QUAN TRỌNG ---
+
+        // 1. Cập nhật poster (hình đại diện) của video
         const videoId = getYoutubeId(videoUrl);
         if (videoId) {
+          // Dùng ảnh chất lượng cao (hqdefault), bạn có thể đổi thành maxresdefault
           const posterUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
           player.poster(posterUrl);
         }
 
+        // 2. Thay đổi nguồn video
         player.src({ type: 'video/youtube', src: videoUrl });
 
+        // 3. Xóa tất cả các phụ đề cũ
         const existingTracks = player.remoteTextTracks();
         let i = existingTracks.length;
         while (i--) {
           player.removeRemoteTextTrack(existingTracks[i]);
         }
-        
-        if (subUrl) {
-            player.addRemoteTextTrack({
-              kind: 'subtitles',
-              src: subUrl,
-              srclang: 'vi',
-              label: 'Tiếng Việt',
-              default: true
-            }, false);
 
-            player.ready(() => {
-                const tracks = player.textTracks();
-                for(let j = 0; j < tracks.length; j++) {
-                    if(tracks[j].language === 'vi') {
-                        tracks[j].mode = 'showing';
-                    } else {
-                        tracks[j].mode = 'disabled';
-                    }
+        // 4. Thêm phụ đề mới
+        player.addRemoteTextTrack({
+          kind: 'subtitles',
+          src: subUrl,
+          srclang: 'vi',
+          label: 'Tiếng Việt',
+          default: true
+        }, false);
+        
+        // 5. Đảm bảo phụ đề mới được hiển thị
+        player.ready(() => {
+            const tracks = player.textTracks();
+            for(let j = 0; j < tracks.length; j++) {
+                if(tracks[j].language === 'vi') {
+                    tracks[j].mode = 'showing';
                 }
-            });
-        }
+            }
+        });
       });
     });
   </script>
